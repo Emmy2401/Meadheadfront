@@ -1,0 +1,90 @@
+/* === Global Styles === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* === Couleurs Principales === */
+  :root {
+    --primary-color: #134074;
+    --secondary-color: #42b983;
+    --accent-color: #2a9d8f;
+    --background-color: #f4f4f4;
+    --border-color: #d9e2ec;
+    --text-color: #333;
+  }
+  
+  /* === Styles Généraux === */
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 20px;
+  }
+  
+  /* === Conteneurs === */
+  .container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* === Titres === */
+  h1, h2, h3 {
+    color: var(--primary-color);
+  }
+  
+  /* === Boutons === */
+  button {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  
+  button:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  /* === Liens === */
+  a {
+    color: var(--secondary-color);
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* === Formulaires === */
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  /* === Responsive Design === */
+  @media (max-width: 768px) {
+    .container {
+      padding: 15px;
+    }
+  
+    button {
+      width: 100%;
+    }
+  }
+  
