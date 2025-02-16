@@ -4,8 +4,8 @@
     <nav v-if="!hideMenu">
       <ul>
         <li><router-link to="/me">👤 Profil</router-link></li>
-        <!--><li><router-link to="/hospitals"  @click="testClick">🏥 Gestion des Hôpitaux</router-link></li>
-        <li><router-link to="/search-hospitals">🔍 Recherche d'Hôpitaux</router-link></li>-->
+        <><li><router-link to="/hospitals">🏥 Gestion des Hôpitaux</router-link></li>
+        <li><router-link to="/search-hospitals">🔍 Recherche d'Hôpitaux</router-link></li>
       </ul>
     </nav>
 
@@ -18,12 +18,9 @@ export default {
   computed: {
     hideMenu() {
       // Cache le menu sur les pages Login et Register
-      return this.$route.path === "/login" || this.$route.path === "/register";
+      return this.$route.path === "/" || this.$route.path === "/register";
     }
   }, 
-  testClick() {
-    console.log("Clic détecté !");
-  }
 };
 </script>
 

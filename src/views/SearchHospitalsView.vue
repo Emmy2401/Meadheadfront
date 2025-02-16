@@ -5,13 +5,13 @@
     <!-- Formulaire de recherche -->
     <form @submit.prevent="searchHospitals">
       <div class="form-group">
-        <label for="name">Nom de l'hôpital :</label>
-        <input type="text" id="name" v-model="searchCriteria.name" placeholder="Ex: Hôpital Saint-Louis" />
-      </div>
-
-      <div class="form-group">
         <label for="specialty">Spécialité :</label>
-        <input type="text" id="specialty" v-model="searchCriteria.specialtyName" placeholder="Ex: Cardiologie" />
+        <select id="specialty" v-model="searchCriteria.specialtyName">
+          <option value="">-- Sélectionnez une spécialité --</option>
+          <option v-for="(specialty, index) in specialtiesList" :key="index" :value="specialty.name">
+            {{ specialty.name }}
+          </option>
+        </select>
       </div>
 
       <div class="form-group">
@@ -42,11 +42,11 @@
           <tr v-for="(hospital, index) in hospitals" :key="index">
             <td>{{ hospital.name }}</td>
             <td>
-            {{
-              hospital.specialties && hospital.specialties.length > 0
-              ? hospital.specialties.map(s => s.name).join(', ')
-              : 'Aucune spécialité'
-            }}
+              {{
+                hospital.specialties && hospital.specialties.length > 0
+                  ? hospital.specialties.map(s => s.name).join(', ')
+                  : 'Aucune spécialité'
+              }}
             </td>
             <td>{{ hospital.numberOfBeds }}</td>
             <td>{{ hospital.distance !== undefined ? hospital.distance.toFixed(2) + ' km' : 'Non calculée' }}</td>
@@ -66,12 +66,20 @@ export default {
   data() {
     return {
       searchCriteria: {
-        name: "",
         specialtyName: "",
         minBeds: null, 
-        refLat: 48.8566, //  Latitude par défaut : POC
-        refLng: 2.3522, //  Longitude par défaut : POC
+        refLat: 48.8566, // Latitude par défaut : Paris
+        refLng: 2.3522,  // Longitude par défaut : Paris
       },
+      specialtiesList: [
+        { name: "Cardiologie" },
+        { name: "Neurologie" },
+        { name: "Chirurgie générale" },
+        { name: "Oncologie" },
+        { name: "Pédiatrie" },
+        { name: "Radiologie" },
+        { name: "Médecine d'urgence" }
+      ],
       hospitals: [],
       searchPerformed: false,
     };
@@ -89,7 +97,7 @@ export default {
             refLng: this.searchCriteria.refLng,
           },
           headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"), //  Auth si nécessaire
+            Authorization: "Bearer " + localStorage.getItem("token"),
           },
         });
 
@@ -129,7 +137,7 @@ h2 {
   text-align: left;
 }
 
-input {
+input, select {
   width: 100%;
   padding: 8px;
   margin-top: 5px;

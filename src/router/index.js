@@ -8,6 +8,7 @@ import ProfileView from '../views/ProfileView.vue';
 import SearchHospitalsView from '../views/SearchHospitalsView.vue';
 
 
+
 const routes = [
   {
     path: '/',
@@ -45,7 +46,7 @@ const routes = [
     path: '/search-hospitals', 
     name: 'searchHospitals', 
     component: SearchHospitalsView 
-  },
+  }, 
 ];
 
 const router = createRouter({

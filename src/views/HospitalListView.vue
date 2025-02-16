@@ -1,19 +1,34 @@
 <template>
   <div class="container">
     <h1>Liste des Hôpitaux</h1>
-    
+     <!-- Bouton Ajouter un hôpital -->
+     <div class="actions">
+      <router-link to="/add-hospital" class="add-button">➕ Ajouter un hôpital</router-link>
+    </div>
+
     <div v-if="hospitals.length > 0">
       <table>
         <thead>
           <tr>
             <th>Nom</th>
             <th>Spécialités</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="hospital in hospitals" :key="hospital.id">
             <td>{{ hospital.name }}</td>
-            <td>{{ hospital.specialties.map(s => s.name).join(', ') }}</td>
+            <td>
+                {{
+                  hospital.specialties && hospital.specialties.length > 0
+                    ? hospital.specialties.map(s => s.name).join(', ')
+                    : 'Aucune spécialité'
+                }}
+            </td>
+            <td>
+              <!-- Bouton Modifier -->
+              <router-link :to="'/update-hospital/' + hospital.id" class="update-button">📝 Modifier</router-link>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -31,22 +46,29 @@ export default {
       hospitals: []
     };
   },
-  async created() {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("Token manquant. Connectez-vous.");
-      
-      const response = await axios.get("http://localhost:8085/getAll", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      this.hospitals = response.data;
-    } catch (error) {
-      console.error("Erreur lors de la récupération des hôpitaux :", error);
-      alert("Impossible de charger les hôpitaux.");
+  methods: {
+    async getAll() {
+      console.log("📡 Appel de getAll()..."); // Vérifier si la méthode est appelée
+      try {
+        const response = await axios.get("http://localhost:8085/hospitals/getAll", {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            //"Cache-Control": "no-cache",
+            //"Pragma": "no-cache"
+          }
+        });
+
+        console.log("✅ Données reçues :", response.data);
+        this.hospitals = response.data;
+      } catch (error) {
+        console.error("❌ Erreur lors de la récupération des hôpitaux :", error);
+        alert("Impossible de charger les hôpitaux.");
+      }
     }
+  },
+  mounted() {
+    console.log("🚀 Composant monté !");
+    this.getAll();
   }
 };
 </script>
