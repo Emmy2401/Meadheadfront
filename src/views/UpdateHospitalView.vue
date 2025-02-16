@@ -112,12 +112,11 @@ export default {
   methods: {
     async fetchHospitalData() {
       try {
-        const token = localStorage.getItem("token"); //  Récupération du token
-        if (!token) throw new Error("Token manquant. Connectez-vous.");
+        
 
-        const response = await axios.get(`http://localhost:8085/hospitals/${this.id}`, {
+        const response = await axios.get(`http://localhost:8085/hospitals/id/${this.id}`, {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: "Bearer " + localStorage.getItem("token"),
           }
         });
 
@@ -132,10 +131,10 @@ export default {
         const token = localStorage.getItem("token"); // 🔥 Vérification du token
         if (!token) throw new Error("Token manquant. Connectez-vous.");
 
-        await axios.put(`http://localhost:8085/hospitals/update/${this.hospital.id}`, this.hospital, {
+        await axios.put(`http://localhost:8085/hospitals/${this.hospital.id}`, this.hospital, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            Authorization: "Bearer " + localStorage.getItem("token"),
           }
         });
 
