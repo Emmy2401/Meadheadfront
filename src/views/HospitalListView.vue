@@ -1,113 +1,81 @@
 <template>
-    <div class="container">
-      <h1>Liste des Hôpitaux</h1>
-  
-      <!-- Bouton Ajouter -->
-      <router-link to="/add-hospital" class="add-button">➕ Ajouter un Hôpital</router-link>
-  
-      <!-- Tableau des hôpitaux -->
+  <div class="container">
+    <h1>Liste des Hôpitaux</h1>
+    
+    <div v-if="hospitals.length > 0">
       <table>
         <thead>
           <tr>
-            <th>Nom de l'Hôpital</th>
-            <th>Actions</th>
+            <th>Nom</th>
+            <th>Spécialités</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(hospital, index) in hospitals" :key="index">
+          <tr v-for="hospital in hospitals" :key="hospital.id">
             <td>{{ hospital.name }}</td>
-            <td>
-              <router-link :to="`/update-hospital/${hospital.id}`" class="update-button">✏️ Modifier</router-link>
-            </td>
+            <td>{{ hospital.specialties.map(s => s.name).join(', ') }}</td>
           </tr>
         </tbody>
       </table>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        // ✅ Données Fake pour le moment (à connecter à l'API plus tard)
-        hospitals: [
-          { id: 1, name: "Hôpital Saint-Louis" },
-          { id: 2, name: "Centre Hospitalier Universitaire" },
-          { id: 3, name: "Clinique Pasteur" },
-        ],
-      };
-    },
-    methods: {
-      addHospital() {
-        alert("Redirection vers la page d'ajout d'hôpital (à implémenter)");
-        // ✅ Plus tard, on utilisera : this.$router.push('/add-hospital');
-      },
-      updateHospital(id) {
-        alert(`Modifier l'hôpital avec ID ${id} (à implémenter)`);
-        // ✅ Plus tard, on utilisera : this.$router.push(`/update-hospital/${id}`);
-      },
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    <p v-else>Aucun hôpital trouvé.</p>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      hospitals: []
+    };
+  },
+  async created() {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Token manquant. Connectez-vous.");
+      
+      const response = await axios.get("http://localhost:8085/getAll", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      this.hospitals = response.data;
+    } catch (error) {
+      console.error("Erreur lors de la récupération des hôpitaux :", error);
+      alert("Impossible de charger les hôpitaux.");
+    }
   }
-  
-  h1 {
-    color: #134074;
-    margin-bottom: 20px;
-  }
-  
-  .add-button {
-    background-color: #2a9d8f;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-bottom: 20px;
-  }
-  
-  .add-button:hover {
-    background-color: #42b983;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  th, td {
-    padding: 10px;
-    border: 1px solid #d9e2ec;
-    text-align: left;
-  }
-  
-  th {
-    background-color: #134074;
-    color: white;
-  }
-  
-  .update-button {
-    background-color: #f39c12;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .update-button:hover {
-    background-color: #e67e22;
-  }
-  </style>
-  
+};
+</script>
+
+<style scoped>
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #d9e2ec;
+  text-align: left;
+}
+
+th {
+  background-color: #134074;
+  color: white;
+}
+</style>

@@ -24,13 +24,14 @@
 </template>
 
 <script>
-import axios from "axios";
+import apiUsers from "../api/axiosUsers"; // On utilise l'API users
 
 export default {
   data() {
     return {
       email: "",
       password: "",
+      loginType: "user",
       loading: false,
       errorMessage: ""
     };
@@ -40,20 +41,22 @@ export default {
       this.loading = true;
       this.errorMessage = "";
 
+      const loginURL = this.loginType === "user" ? "/login" : "http://localhost:8085/hospitals/login";
+
       try {
-        const response = await axios.post("http://localhost:8082/api/users/login", {
-          username: this.email,
-          password: this.password
-        });
+        const response = this.loginType === "user"
+          ? await apiUsers.post(loginURL, { username: this.email, password: this.password })
+          : await apiHospitals.post(loginURL, { username: this.email, password: this.password });
 
         console.log("Token reçu :", response.data.token);
 
-        // 🔹 Stocker le token dans localStorage
         localStorage.setItem("token", response.data.token);
 
-        // 🔹 Redirection vers la page de profil après connexion
-        this.$router.push("/me");
-
+        if (this.loginType === "user") {
+          this.$router.push("/me"); // Page utilisateur
+        } else {
+          this.$router.push("/hospitals"); // Page hôpital
+        }
       } catch (error) {
         this.errorMessage = "Email ou mot de passe incorrect.";
       } finally {
