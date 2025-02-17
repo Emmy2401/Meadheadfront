@@ -58,10 +58,10 @@ export default {
           }
         });
 
-        console.log("✅ Données reçues :", response.data);
+        console.log(" Données reçues :", response.data);
         this.hospitals = response.data;
       } catch (error) {
-        console.error("❌ Erreur lors de la récupération des hôpitaux :", error);
+        console.error("Erreur lors de la récupération des hôpitaux :", error);
         alert("Impossible de charger les hôpitaux.");
       }
     }
