@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     async getAll() {
-      console.log("📡 Appel de getAll()..."); // Vérifier si la méthode est appelée
+      console.log(" Appel de getAll()..."); // Vérifier si la méthode est appelée
       try {
         const response = await axios.get("http://localhost:8085/hospitals/getAll", {
           headers: {
@@ -67,7 +67,7 @@ export default {
     }
   },
   mounted() {
-    console.log("🚀 Composant monté !");
+    console.log(" Composant monté !");
     this.getAll();
   }
 };

@@ -1,38 +1,50 @@
-describe("🔹 Test de base - Page d'accueil avec connexion", () => {
-  
-    // Fonction pour se connecter avant les tests
-    beforeEach(() => {
-      cy.visit("http://localhost:5173/login"); // Remplace l'URL si besoin
-  
-      cy.get("#email").type("test@user.fr"); // Champ email
-      cy.get("#password").type("monpassword"); // Champ mot de passe
-      cy.get("button[type='submit']").click(); // Bouton de connexion
-  
-      // Attendre que la redirection se fasse après la connexion
-      cy.url().should("include", "/home"); // Modifie selon l’URL après connexion
-    });
-  
-    it("✅ Vérifie que la page d'accueil se charge après connexion", () => {
-      cy.visit("http://localhost:5173/home"); // Page après login
-      cy.contains("Rechercher un Hôpital").should("be.visible");
-    });
-  
-    it("✅ Teste la recherche d'un hôpital avec une spécialité", () => {
-      cy.visit("http://localhost:5173/home");
-  
-      cy.get("#specialty").select("Cardiologie"); // Sélectionne une spécialité
-      cy.get("button[type='submit']").click(); // Clique sur "Rechercher"
-  
-      cy.get("table tbody tr").should("have.length.greaterThan", 0); // Vérifie qu'il y a des résultats
-    });
-  
-    it("✅ Vérifie qu'aucun hôpital n'est trouvé avec une spécialité inexistante", () => {
-      cy.visit("http://localhost:5173/home");
-  
-      cy.get("#specialty").select("Spécialité Inexistante");
-      cy.get("button[type='submit']").click();
-  
-      cy.contains("Aucun hôpital trouvé.").should("be.visible");
-    });
+describe('Hospital App - Login and Search Tests', () => {
+  beforeEach(() => {
+      cy.visit('/'); // bonne url
   });
-  
+
+  it('should log in with valid credentials', () => {
+      cy.get('#email').type('test@user.fr');
+      cy.get('#password').type('monpassword');
+      cy.get('button[type="submit"]').click();
+      
+      // Vérifier que la connexion est réussie
+      cy.url().should('include', '/');
+      cy.contains('Bienvenue').should('be.visible');
+  });
+
+  it('should display an error for invalid login', () => {
+      cy.get('#email').type('wronguser@example.com');
+      cy.get('#password').type('wrongpassword');
+      cy.get('button[type="submit"]').click();
+      
+      cy.get('.error').should('be.visible');
+  });
+
+  it('should search for hospitals using filters and display results', () => {
+    // Connexion
+    cy.get('#email').type('test@user.fr');
+    cy.get('#password').type('monpassword');
+    cy.get('button[type="submit"]').click();
+    cy.url().should('include', '/');
+    
+    // Accéder à la page de recherche
+    cy.visit('/search-hospitals?refLat=48.8566&refLng=2.3522');
+    cy.url().should('include', 'refLat=48.8566').and('include', 'refLng=2.3522');
+    
+    // Appliquer les filtres
+    cy.get('#specialty').select('Cardiologie').should('have.value', 'Cardiologie');
+    cy.get('#beds').clear().type('10').should('have.value', '10');
+    
+    // Lancer la recherche et intercepter la requête
+    cy.intercept('GET', '**/hospitals/searchCriteria*').as('searchHospitals');
+    cy.get('button[type="submit"]').click();
+    
+    cy.wait('@searchHospitals', { timeout: 10000 }).then(({ request }) => {
+        expect(request.url).to.include('minBeds=10');
+        expect(request.url).to.include('specialty=Cardiologie');
+        expect(request.url).to.include('refLat=48.8566');
+        expect(request.url).to.include('refLng=2.3522');
+    });
+});
+});

@@ -92,7 +92,7 @@ export default {
         const response = await axios.get("http://localhost:8085/hospitals/searchCriteria", {
           params: {
             minBeds: this.searchCriteria.minBeds,
-            specialtyName: this.searchCriteria.specialtyName,
+            specialty: this.searchCriteria.specialtyName, 
             refLat: this.searchCriteria.refLat,
             refLng: this.searchCriteria.refLng,
           },
@@ -102,6 +102,15 @@ export default {
         });
 
         this.hospitals = response.data;
+        this.$router.push({
+        path: "/search-hospitals",
+        query: {
+          refLat: this.searchCriteria.refLat,
+          refLng: this.searchCriteria.refLng,
+          minBeds: this.searchCriteria.minBeds,
+          specialty: this.searchCriteria.specialtyName,
+        },
+      });
       } catch (error) {
         console.error("Erreur lors de la recherche des hôpitaux :", error);
         alert("Erreur lors de la recherche. Vérifiez la console.");
