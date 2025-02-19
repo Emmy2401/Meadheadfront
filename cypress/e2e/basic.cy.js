@@ -33,16 +33,16 @@ describe('Hospital App - Login and Search Tests', () => {
     cy.url().should('include', 'refLat=48.8566').and('include', 'refLng=2.3522');
     
     // Appliquer les filtres
-    cy.get('#specialty').select('Cardiologie').should('have.value', 'Cardiologie');
-    cy.get('#beds').clear().type('10').should('have.value', '10');
+    cy.get('#specialtyName').select('Cardiologie').should('have.value', 'Cardiologie');
+    cy.get('#beds').clear().type('500').should('have.value', '500');
     
     // Lancer la recherche et intercepter la requête
     cy.intercept('GET', '**/hospitals/searchCriteria*').as('searchHospitals');
     cy.get('button[type="submit"]').click();
     
     cy.wait('@searchHospitals', { timeout: 10000 }).then(({ request }) => {
-        expect(request.url).to.include('minBeds=10');
-        expect(request.url).to.include('specialty=Cardiologie');
+        expect(request.url).to.include('minBeds=500');
+        expect(request.url).to.include('specialtyName=Cardiologie');
         expect(request.url).to.include('refLat=48.8566');
         expect(request.url).to.include('refLng=2.3522');
     });

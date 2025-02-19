@@ -5,8 +5,8 @@
     <!-- Formulaire de recherche -->
     <form @submit.prevent="searchHospitals">
       <div class="form-group">
-        <label for="specialty">Spécialité :</label>
-        <select id="specialty" v-model="searchCriteria.specialtyName">
+        <label for="specialtyName">Spécialité :</label>
+        <select id="specialtyName" v-model="searchCriteria.specialtyName">
           <option value="">-- Sélectionnez une spécialité --</option>
           <option v-for="(specialty, index) in specialtiesList" :key="index" :value="specialty.name">
             {{ specialty.name }}
@@ -108,7 +108,7 @@ export default {
           refLat: this.searchCriteria.refLat,
           refLng: this.searchCriteria.refLng,
           minBeds: this.searchCriteria.minBeds,
-          specialty: this.searchCriteria.specialtyName,
+          specialtyName: this.searchCriteria.specialtyName,
         },
       });
       } catch (error) {
