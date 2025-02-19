@@ -92,7 +92,7 @@ export default {
         const response = await axios.get("http://localhost:8085/hospitals/searchCriteria", {
           params: {
             minBeds: this.searchCriteria.minBeds,
-            specialty: this.searchCriteria.specialtyName, 
+            specialtyName: this.searchCriteria.specialtyName, 
             refLat: this.searchCriteria.refLat,
             refLng: this.searchCriteria.refLng,
           },
