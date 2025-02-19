@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Modifier l'Hôpital</h1>
+    <h1>Consultation  Fiche Hôpital</h1>
 
     <form @submit.prevent="handleUpdate">
       <!-- ID (Non modifiable) -->
@@ -49,7 +49,7 @@
 
       <!-- Boutons -->
       <div class="form-actions">
-        <button type="submit">Enregistrer les modifications</button>
+        <!--button type="submit">Enregistrer les modifications</button-->
         <router-link to="/hospitals" class="back-button">🔙 Retour à la liste</router-link>
       </div>
     </form>
