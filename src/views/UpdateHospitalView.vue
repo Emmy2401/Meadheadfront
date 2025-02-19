@@ -33,38 +33,16 @@
         <input type="number" id="beds" v-model.number="hospital.numberOfBeds" min="0" required />
       </div>
 
-      <!-- Sélection des spécialités -->
+      <!-- Affichage des spécialités en mode lecture seule -->
       <div class="form-group">
-        <label>Spécialités (optionnel) :</label>
-        <select v-model="selectedSpecialty" @change="addSpecialty">
-          <option value="" disabled selected>Choisir une spécialité</option>
-          <option v-for="(specialty, index) in specialtiesList" :key="index" :value="specialty">
-            {{ specialty.name }}
-          </option>
-        </select>
-
+        <label>Spécialités :</label>
         <ul>
-          <li v-for="(specialty, index) in hospital.specialties" :key="index">
-            <strong>{{ specialty.name }}</strong>
-            <button type="button" @click="removeSpecialty(index)">❌</button>
-
-            <!-- Sous-spécialités -->
-            <div>
-              <label>Ajouter une sous-spécialité :</label>
-              <select v-model="selectedSubSpecialty[index]" @change="addSubSpecialty(index)">
-                <option value="" disabled selected>Choisir une sous-spécialité</option>
-                <option v-for="sub in specialty.subSpecialtiesList" :key="sub" :value="sub">
-                  {{ sub }}
-                </option>
-              </select>
-            </div>
-
-            <ul>
-              <li v-for="(sub, subIndex) in specialty.subSpecialties" :key="subIndex">
-                {{ sub }}
-                <button type="button" @click="removeSubSpecialty(index, subIndex)">❌</button>
-              </li>
-            </ul>
+          <li v-for="specialty in hospital.specialties" :key="specialty.name">
+            <strong>{{ specialty.name }}</strong> :
+            <span v-if="specialty.subSpecialties.length > 0">
+              {{ specialty.subSpecialties.map(sub => sub.name).join(", ") }}
+            </span>
+            <span v-else>Pas de sous-spécialité</span>
           </li>
         </ul>
       </div>
@@ -82,7 +60,7 @@
 import axios from "axios";
 
 export default {
-  props: ["id"], // Récupère l'ID de l'hôpital depuis l'URL
+  props: ["id"], 
   data() {
     return {
       hospital: {
@@ -92,18 +70,7 @@ export default {
         longitude: null,
         numberOfBeds: 0,
         specialties: [],
-      },
-      selectedSpecialty: "",
-      selectedSubSpecialty: {},
-      specialtiesList: [
-        { name: "Cardiologie", subSpecialtiesList: ["Cardiologie pédiatrique", "Rythmologie", "Chirurgie cardiaque"] },
-        { name: "Neurologie", subSpecialtiesList: ["Neurochirurgie", "Neurologie pédiatrique", "Épileptologie"] },
-        { name: "Chirurgie générale", subSpecialtiesList: ["Chirurgie digestive", "Chirurgie bariatrique"] },
-        { name: "Oncologie", subSpecialtiesList: ["Oncologie pédiatrique", "Radiothérapie", "Hémato-oncologie"] },
-        { name: "Pédiatrie", subSpecialtiesList: ["Néonatologie", "Pneumologie pédiatrique"] },
-        { name: "Radiologie", subSpecialtiesList: ["Imagerie médicale", "Radiologie interventionnelle"] },
-        { name: "Médecine d'urgence", subSpecialtiesList: ["Urgences pédiatriques", "Réanimation"] }
-      ]
+      }
     };
   },
   created() {
@@ -112,12 +79,8 @@ export default {
   methods: {
     async fetchHospitalData() {
       try {
-        
-
         const response = await axios.get(`http://localhost:8085/hospitals/id/${this.id}`, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          }
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") }
         });
 
         this.hospital = response.data;
@@ -126,12 +89,16 @@ export default {
         alert("Impossible de récupérer l'hôpital. Vérifiez votre connexion.");
       }
     },
+
     async handleUpdate() {
       try {
-        const token = localStorage.getItem("token"); // 🔥 Vérification du token
+        const token = localStorage.getItem("token");
         if (!token) throw new Error("Token manquant. Connectez-vous.");
 
-        await axios.put(`http://localhost:8085/hospitals/${this.hospital.id}`, this.hospital, {
+        // Supprimer les spécialités avant d'envoyer la requête pour éviter toute modification
+        const { specialties, ...hospitalData } = this.hospital;
+
+        await axios.put(`http://localhost:8085/hospitals/update/${this.hospital.id}`, hospitalData, {
           headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer " + localStorage.getItem("token"),
@@ -144,29 +111,6 @@ export default {
         console.error("Erreur lors de la mise à jour de l'hôpital :", error);
         alert("Échec de la mise à jour. Vérifiez vos permissions.");
       }
-    },
-    addSpecialty() {
-      if (this.selectedSpecialty && !this.hospital.specialties.some(s => s.name === this.selectedSpecialty.name)) {
-        this.hospital.specialties.push({
-          name: this.selectedSpecialty.name,
-          subSpecialties: [],
-          subSpecialtiesList: this.selectedSpecialty.subSpecialtiesList
-        });
-      }
-      this.selectedSpecialty = "";
-    },
-    removeSpecialty(index) {
-      this.hospital.specialties.splice(index, 1);
-    },
-    addSubSpecialty(specialtyIndex) {
-      if (this.selectedSubSpecialty[specialtyIndex] &&
-          !this.hospital.specialties[specialtyIndex].subSpecialties.includes(this.selectedSubSpecialty[specialtyIndex])) {
-        this.hospital.specialties[specialtyIndex].subSpecialties.push(this.selectedSubSpecialty[specialtyIndex]);
-      }
-      this.selectedSubSpecialty[specialtyIndex] = "";
-    },
-    removeSubSpecialty(specialtyIndex, subIndex) {
-      this.hospital.specialties[specialtyIndex].subSpecialties.splice(subIndex, 1);
     }
   }
 };
