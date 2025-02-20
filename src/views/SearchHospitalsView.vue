@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import apiHospitals from "../api/axiosHospitals";;
 
 export default {
   data() {
@@ -89,7 +89,8 @@ export default {
       this.searchPerformed = true;
 
       try {
-        const response = await axios.get("http://localhost:8085/hospitals/searchCriteria", {
+        const response = await apiHospitals.get("http://localhost:8085/hospitals/searchCriteria", {
+          withCredentials: true,
           params: {
             minBeds: this.searchCriteria.minBeds,
             specialtyName: this.searchCriteria.specialtyName, 

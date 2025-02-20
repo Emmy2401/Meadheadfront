@@ -7,12 +7,13 @@ const apiHospitals = axios.create({
   },
   //withCredentials: true
 });
-
+axios.defaults.withXSRFToken = true;
 // Ajouter automatiquement le token aux requêtes
 apiHospitals.interceptors.request.use(config => {
   const token = localStorage.getItem("token"); // Vérifie si le token est bien stocké
   if (token) {
-    config.headers["X-User-Role"] = "ROLE_USER";
+    
+    config.headers["X-User-Role"] = "USER";
     console.log(" Token envoyé :", token); // DEBUG : Vérifier que le token est bien lu
     config.headers.Authorization = `Bearer ${token}`;
   } else {

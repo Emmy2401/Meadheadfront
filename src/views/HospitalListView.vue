@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import apiHospitals from "../api/axiosHospitals";
 
 export default {
   data() {
@@ -50,14 +50,17 @@ export default {
     async getAll() {
       console.log(" Appel de getAll()..."); // Vérifier si la méthode est appelée
       try {
-        const response = await axios.get("http://localhost:8085/hospitals/getAll", {
+        const response = await apiHospitals.get("http://localhost:8085/hospitals/getAll", {
+          withCredentials: true,
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
+           
             //"Cache-Control": "no-cache",
             //"Pragma": "no-cache"
           }
         });
-
+console.log("AAAAAAAAAAAAAAAAAAAH");
+console.log(localStorage.getItem("token"));
         console.log(" Données reçues :", response.data);
         this.hospitals = response.data;
       } catch (error) {

@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import apiHospitals from "../api/axiosHospitals";
 
 export default {
   data() {
@@ -102,9 +102,10 @@ export default {
         const token = localStorage.getItem("token"); //  Récupération du token
         if (!token) throw new Error("Token manquant. Connectez-vous.");
 
-        await axios.post("http://localhost:8085/hospitals", this.hospital, {
+        await apiHospitals.post("http://localhost:8085/hospitals/add", this.hospital, {
+          withCredentials: true,
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "text/plain",
             Authorization: `Bearer ${token}`
           }
         });

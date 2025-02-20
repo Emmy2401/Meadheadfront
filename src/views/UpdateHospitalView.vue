@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import apiHospitals from "../api/axiosHospitals";
 
 export default {
   props: ["id"], 
@@ -79,7 +79,8 @@ export default {
   methods: {
     async fetchHospitalData() {
       try {
-        const response = await axios.get(`http://localhost:8085/hospitals/id/${this.id}`, {
+        const response = await apiHospitals.get(`http://localhost:8085/hospitals/id/${this.id}`, {
+          withCredentials: true,
           headers: { Authorization: "Bearer " + localStorage.getItem("token") }
         });
 
@@ -98,7 +99,7 @@ export default {
         // Supprimer les spécialités avant d'envoyer la requête pour éviter toute modification
         const { specialties, ...hospitalData } = this.hospital;
 
-        await axios.put(`http://localhost:8085/hospitals/update/${this.hospital.id}`, hospitalData, {
+        await apiHospitals.put(`http://localhost:8085/hospitals/update/${this.hospital.id}`, hospitalData, {
           headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer " + localStorage.getItem("token"),
