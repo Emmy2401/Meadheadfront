@@ -47,7 +47,7 @@
               <label>Ajouter une sous-spécialité :</label>
               <select v-model="selectedSubSpecialty[index]" @change="addSubSpecialty(index)">
                 <option value="" disabled selected>Choisir une sous-spécialité</option>
-                <option v-for="sub in specialty.subSpecialtiesList" :key="sub" :value="sub">
+                <option v-for="sub in specialty.availableSubSpecialties" :key="sub" :value="sub">
                   {{ sub }}
                 </option>
               </select>
@@ -84,25 +84,34 @@ export default {
         specialties: [], // Facultatif
       },
       selectedSpecialty: "",
-      selectedSubSpecialty: {},
+      selectedSubSpecialty: {}, // Stocker les sous-spécialités sélectionnées
       specialtiesList: [
-        { name: "Cardiologie", subSpecialtiesList: ["Cardiologie pédiatrique", "Rythmologie", "Chirurgie cardiaque"] },
-        { name: "Neurologie", subSpecialtiesList: ["Neurochirurgie", "Neurologie pédiatrique", "Épileptologie"] },
-        { name: "Chirurgie générale", subSpecialtiesList: ["Chirurgie digestive", "Chirurgie bariatrique"] },
-        { name: "Oncologie", subSpecialtiesList: ["Oncologie pédiatrique", "Radiothérapie", "Hémato-oncologie"] },
-        { name: "Pédiatrie", subSpecialtiesList: ["Néonatologie", "Pneumologie pédiatrique"] },
-        { name: "Radiologie", subSpecialtiesList: ["Imagerie médicale", "Radiologie interventionnelle"] },
-        { name: "Médecine d'urgence", subSpecialtiesList: ["Urgences pédiatriques", "Réanimation"] }
+        { name: "Cardiologie", subSpecialties: ["Cardiologie pédiatrique", "Rythmologie", "Chirurgie cardiaque"] },
+        { name: "Neurologie", subSpecialties: ["Neurochirurgie", "Neurologie pédiatrique", "Épileptologie"] },
+        { name: "Chirurgie générale", subSpecialties: ["Chirurgie digestive", "Chirurgie bariatrique"] },
+        { name: "Oncologie", subSpecialties: ["Oncologie pédiatrique", "Radiothérapie", "Hémato-oncologie"] },
+        { name: "Pédiatrie", subSpecialties: ["Néonatologie", "Pneumologie pédiatrique"] },
+        { name: "Radiologie", subSpecialties: ["Imagerie médicale", "Radiologie interventionnelle"] },
+        { name: "Médecine d'urgence", subSpecialties: ["Urgences pédiatriques", "Réanimation"] }
       ]
     };
   },
   methods: {
     async handleSubmit() {
       try {
-        const token = localStorage.getItem("token"); //  Récupération du token
+        const token = localStorage.getItem("token");
         if (!token) throw new Error("Token manquant. Connectez-vous.");
 
-        await apiHospitals.post("http://localhost:8085/hospitals/add", this.hospital, {
+        // 🔥 Transformer les sous-spécialités en objets pour correspondre au backend
+        const formattedHospital = {
+          ...this.hospital,
+          specialties: this.hospital.specialties.map(specialty => ({
+            name: specialty.name,
+            subSpecialties: specialty.subSpecialties.map(subName => ({ name: subName }))
+          }))
+        };
+
+        await apiHospitals.post("http://localhost:8085/hospitals/add", formattedHospital, {
           withCredentials: true,
           headers: {
             "Content-Type": "text/plain",
@@ -119,11 +128,15 @@ export default {
     },
     addSpecialty() {
       if (this.selectedSpecialty && !this.hospital.specialties.some(s => s.name === this.selectedSpecialty.name)) {
+        const specialtyDetails = this.specialtiesList.find(s => s.name === this.selectedSpecialty.name);
+        
         this.hospital.specialties.push({ 
           name: this.selectedSpecialty.name, 
           subSpecialties: [],
-          subSpecialtiesList: this.selectedSpecialty.subSpecialtiesList
+          availableSubSpecialties: specialtyDetails ? specialtyDetails.subSpecialties : []
         });
+
+        this.selectedSubSpecialty[this.hospital.specialties.length - 1] = "";
       }
       this.selectedSpecialty = "";
     },
@@ -131,7 +144,7 @@ export default {
       this.hospital.specialties.splice(index, 1);
     },
     addSubSpecialty(specialtyIndex) {
-      if (this.selectedSubSpecialty[specialtyIndex] && 
+      if (this.selectedSubSpecialty[specialtyIndex] &&
           !this.hospital.specialties[specialtyIndex].subSpecialties.includes(this.selectedSubSpecialty[specialtyIndex])) {
         this.hospital.specialties[specialtyIndex].subSpecialties.push(this.selectedSubSpecialty[specialtyIndex]);
       }
@@ -143,51 +156,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.container {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 15px;
-  text-align: left;
-}
-
-input, select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #d9e2ec;
-  border-radius: 5px;
-}
-
-button {
-  margin-top: 10px;
-  padding: 8px;
-  background-color: #2a9d8f;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #42b983;
-}
-
-.back-button {
-  background-color: #ccc;
-  margin-left: 10px;
-}
-
-.back-button:hover {
-  background-color: #aaa;
-}
-</style>
