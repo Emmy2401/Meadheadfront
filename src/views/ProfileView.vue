@@ -52,7 +52,7 @@ export default {
   methods: {
     logout() {
       localStorage.removeItem("token"); // Supprimer le token
-      this.$router.push("/login");
+      this.$router.push("/");
     }
   }
 };

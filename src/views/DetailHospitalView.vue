@@ -2,7 +2,7 @@
   <div class="container">
     <h1>Consultation  Fiche Hôpital</h1>
 
-    <form @submit.prevent="handleUpdate">
+    <form @submit.prevent="handleDetail">
       <!-- ID (Non modifiable) -->
       <div class="form-group">
         <label for="id">ID :</label>
@@ -18,19 +18,19 @@
       <!-- Latitude -->
       <div class="form-group">
         <label for="latitude">Latitude :</label>
-        <input type="number" id="latitude" v-model.number="hospital.latitude" required step="0.000001" />
+        <input type="number" id="latitude" v-model.number="hospital.latitude" required step="0.000001" readonly class="disabled-input"/>
       </div>
 
       <!-- Longitude -->
       <div class="form-group">
         <label for="longitude">Longitude :</label>
-        <input type="number" id="longitude" v-model.number="hospital.longitude" required step="0.000001" />
+        <input type="number" id="longitude" v-model.number="hospital.longitude" required step="0.000001" readonly class="disabled-input" />
       </div>
 
       <!-- Nombre de lits -->
       <div class="form-group">
         <label for="beds">Nombre de lits :</label>
-        <input type="number" id="beds" v-model.number="hospital.numberOfBeds" min="0" required />
+        <input type="number" id="beds" v-model.number="hospital.numberOfBeds" min="0" required  readonly class="disabled-input"/>
       </div>
 
       <!-- Affichage des spécialités en mode lecture seule -->
@@ -49,7 +49,6 @@
 
       <!-- Boutons -->
       <div class="form-actions">
-        <!--button type="submit">Enregistrer les modifications</button-->
         <router-link to="/hospitals" class="back-button">🔙 Retour à la liste</router-link>
       </div>
     </form>
@@ -91,7 +90,7 @@ export default {
       }
     },
 
-    async handleUpdate() {
+    async handleDetail() {
       try {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Token manquant. Connectez-vous.");
@@ -99,7 +98,7 @@ export default {
         // Supprimer les spécialités avant d'envoyer la requête pour éviter toute modification
         const { specialties, ...hospitalData } = this.hospital;
 
-        await apiHospitals.put(`http://localhost:8085/hospitals/update/${this.hospital.id}`, hospitalData, {
+        await apiHospitals.put(`http://localhost:8085/hospitals/detail/${this.hospital.id}`, hospitalData, {
           headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer " + localStorage.getItem("token"),

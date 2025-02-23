@@ -102,7 +102,7 @@ export default {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Token manquant. Connectez-vous.");
 
-        // 🔥 Transformer les sous-spécialités en objets pour correspondre au backend
+        //  Transformer les sous-spécialités en objets pour correspondre au backend
         const formattedHospital = {
           ...this.hospital,
           specialties: this.hospital.specialties.map(specialty => ({

@@ -60,37 +60,37 @@ export default {
       this.errors = {};
       this.errorMessage = "";
 
-      // 🔹 Validation Email
+      //  Validation Email
       if (!this.username.trim()) {
         this.errors.username = "L'email est requis.";
       } else if (!this.validateEmail(this.username)) {
         this.errors.username = "Veuillez entrer une adresse email valide.";
       }
 
-      // 🔹 Validation Password
+      //  Validation Password
       if (!this.password.trim()) {
         this.errors.password = "Le mot de passe est requis.";
       } else if (this.password.length < 6) {
         this.errors.password = "Le mot de passe doit faire au moins 6 caractères.";
       }
 
-      // 🔹 Arrête si des erreurs de validation sont présentes
+      //  Arrête si des erreurs de validation sont présentes
       if (Object.keys(this.errors).length > 0) return;
 
       this.loading = true; // Désactiver le bouton pendant l'inscription
 
       try {
-        // 🔹 Envoi des données à l'API Users `/register`
+        // Envoi des données à l'API Users `/register`
         const response = await axios.post("http://localhost:8082/api/users/register", {
           username: this.username,
           password: this.password
         });
 
-        // 🔹 Stocker le token JWT retourné par l'API
+        //  Stocker le token JWT retourné par l'API
         localStorage.setItem("token", response.data.token);
 
-        // 🔹 Rediriger vers le profil après inscription réussie
-        this.$router.push("/profile");
+        //  Rediriger vers le profil après inscription réussie
+        this.$router.push("/me");
       } catch (error) {
         this.errorMessage = "Erreur lors de l'inscription. Cet email est peut-être déjà utilisé.";
       } finally {
@@ -98,7 +98,7 @@ export default {
       }
     },
 
-    // 🔹 Fonction pour valider un email
+    //  Fonction pour valider un email
     validateEmail(email) {
       const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       return emailPattern.test(email);

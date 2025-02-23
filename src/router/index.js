@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import HospitalListView from '../views/HospitalListView.vue';
 import AddHospitalView from '../views/AddHospitalView.vue';
-import UpdateHospitalView from '../views/UpdateHospitalView.vue';
+import DetailHospitalView from '../views/DetailHospitalView.vue';
 import ProfileView from '../views/ProfileView.vue'; 
 import SearchHospitalsView from '../views/SearchHospitalsView.vue';
 
@@ -30,9 +30,9 @@ const routes = [
     component: AddHospitalView 
 
   }, 
-  { path: '/update-hospital/:id', 
-    name: 'updateHospital', 
-    component: UpdateHospitalView, 
+  { path: '/detail-hospital/:id', 
+    name: 'detailHospital', 
+    component: DetailHospitalView, 
     props: true 
 
   }, 

@@ -27,7 +27,7 @@
             </td>
             <td>
               <!-- Bouton Modifier -->
-              <router-link :to="'/update-hospital/' + hospital.id" class="update-button">📝 Consulter</router-link>
+              <router-link :to="'/detail-hospital/' + hospital.id" class="update-button">📝 Consulter</router-link>
             </td>
           </tr>
         </tbody>
