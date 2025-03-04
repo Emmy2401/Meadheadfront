@@ -1,0 +1,41 @@
+name: Deploy Vue.js to Docker Hub
+
+on:
+  push:
+    branches:
+      - main  # Déclenche le build uniquement sur main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'latest'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Vue.js app
+        run: npm run build
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t my-docker-username/vue-app:latest .
+          docker push my-docker-username/vue-app:latest
+
+      - name: Deploy to server (optionnel)
+        run: |
+          ssh user@your-server "docker pull my-docker-username/vue-app:latest && docker restart vue-container"
