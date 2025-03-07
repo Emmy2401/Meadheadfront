@@ -1,0 +1,58 @@
+name: CI/CD pour le Frontend (VueJS)
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-22.04
+
+    steps:
+      # 1. Récupérer le code du dépôt
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Configurer Node.js (par exemple, Node 18)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # 3. Installer les dépendances
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Exécuter les tests (si présents)
+      - name: Run tests
+        run: npm run test --if-present
+
+      # 5. Construire le projet (génère le dossier "dist")
+      - name: Build frontend
+        run: npm run build
+
+      # 6. Se connecter à Docker Hub
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 7. Construire l'image Docker avec le tag correspondant au SHA du commit
+      - name: Build Docker image (SHA)
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/meadheadfront:${{ github.sha }} .
+
+      # 8. Pousser l'image Docker (tag SHA) vers Docker Hub
+      - name: Push Docker image (SHA)
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/meadheadfront:${{ github.sha }}
+
+      # 9. Retaguer l’image SHA en "latest" et la pousser, uniquement si on est sur la branche main
+      - name: Tag and push Docker image as latest
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/meadheadfront:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/meadheadfront:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/meadheadfront:latest
