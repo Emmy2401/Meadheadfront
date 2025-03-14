@@ -16,7 +16,7 @@
 
       <div class="form-group">
         <label for="beds">Nombre de lits minimum :</label>
-        <input type="number" id="beds" v-model.number="searchCriteria.minBeds" min="0" />
+        <input type="number" id="minBeds" v-model.number="searchCriteria.minBeds" min="0" />
       </div>
 
       <!-- Boutons d'action -->
